@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio - AV1 Lanches</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .category {
+            margin-bottom: 20px;
+        }
+        .category h2 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .item img {
+            height: 80px;
+            width: auto;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        .item .details {
+            flex: 1;
+        }
+        .item label {
+            display: block;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .item .quantity-controls {
+            display: none;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .item .quantity-controls button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+        }
+        .item .quantity-controls button:hover {
+            background-color: #0056b3;
+        }
+        .item .quantity-controls p {
+            margin-left: 15px;
+        }
+        #floatingButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007BFF;
+    color: white;
+ 
+    width: 60px;
+    padding-top: 20px;
+    height: 60px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+}
+
+#floatingButton:hover {
+    background-color: #0056b3;
+}
+
+
+        .cart {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        .total {
+            font-weight: bold;
+        }
+        .checkout {
+            margin-top: 20px;
+        }
+        .card-details, .pix-details {
+            display: none;
+        }
+        .qr-code {
+            width: 200px;
+            height: 200px;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cardápio - AV1 Lanches</h1>
+
+        <div id="menu">
+            <div class="category">
+                <h2>Hambúrgueres Artesanais</h2>
+                <div class="item">
+                    <img src="https://www.incrivel.com/_next/image/?url=https%3A%2F%2Fincrivel-prd.adtsys.com.br%2Fwp-content%2Fuploads%2F2022%2F11%2Fburger_carne_incri%CC%81vel.png&w=1920&q=75" alt="Hamburguer Arretado">
+                    <div class="details">
+                        <input type="checkbox" id="burger1" data-name="Cheeseburger" price="21.00">
+                        <label for="burger1">Hamburguer Arretado - R$ 21,00</label>
+                        <div class="quantity-controls" id="qty_controls_burger1">
+                            <button onclick="changeQtd('burger1', -1)">-</button>
+                            <span id="qty_burger1">1</span>
+                            <button onclick="changeQtd('burger1', 1)">+</button>
+                        </div>
+                        <p>Hamburger do chefe 150g, bacon, queijo coalho maçaricado, cebola caramelizada, acelga e molho da casa.</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="https://img.freepik.com/fotos-premium/um-hamburguer-com-abacaxi_900321-27444.jpg" alt="Hamburguer Tropical">
+                    <div class="details">
+                        <input type="checkbox" id="burger2" data-name="Bacon Burger" price="20.00">
+                        <label for="burger2">Hamburguer Tropical - R$ 20,00</label>
+                        <div class="quantity-controls" id="qty_controls_burger2">
+                            <button onclick="changeQtd('burger2', -1)">-</button>
+                            <span id="qty_burger2">1</span>
+                            <button onclick="changeQtd('burger2', 1)">+</button>
+                        </div>
+                        <p>Hamburger do chefe 150g, abacaxi chapeado, 2 fatias de queijos, bacon, acelga, cebola caramelizada e molho da casa.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>Salgados</h2>
+                <div class="item">
+                    <img src="https://pubimg.band.uol.com.br/files/2c0933a3fb3b6946e074.webp" alt="Coxinha">
+                    <div class="details">
+                        <input type="checkbox" id="salty1" data-name="Coxinha" price="5.00">
+                        <label for="salty1">Coxinha Raíz - R$ 5,00</label>
+                        <div class="quantity-controls" id="qty_controls_salty1">
+                            <button onclick="changeQtd('salty1', -1)">-</button>
+                            <span id="qty_salty1">1</span>
+                            <button onclick="changeQtd('salty1', 1)">+</button>
+                        </div>
+                        <p>Saborosa coxinha de massa de batata com recheio de frango.</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="https://i.pinimg.com/564x/33/c9/90/33c990c5129e77f7b9d72d98b7ed6657.jpg" alt="Empada Turbinada">
+                    <div class="details">
+                        <input type="checkbox" id="salty2" data-name="Empada" price="8.00">
+                        <label for="salty2">Empada Turbinada - R$ 8,00</label>
+                        <div class="quantity-controls" id="qty_controls_salty2">
+                            <button onclick="changeQtd('salty2', -1)">-</button>
+                            <span id="qty_salty2">1</span>
+                            <button onclick="changeQtd('salty2', 1)">+</button>
+                        </div>
+                        <p>Empada turbinada no recheio com frango e queijo bem derretido.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>Bebidas</h2>
+                <div class="item">
+                    <img src="https://images.tcdn.com.br/img/img_prod/858764/refrigerante_coca_cola_lata_350ml_c_12_359_1_20201021152315.jpg" alt="Refrigerante">
+                    <div class="details">
+                        <input type="checkbox" id="drink1" data-name="Refrigerante" price="4.00">
+                        <label for="drink1">Coca Cola - R$ 4,00</label>
+                        <div class="quantity-controls" id="qty_controls_drink1">
+                            <button onclick="changeQtd('drink1', -1)">-</button>
+                            <span id="qty_drink1">1</span>
+                            <button onclick="changeQtd('drink1', 1)">+</button>
+                        </div>
+                        <p>Apenas coca-cola.</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="https://cardapio.primeirobar.com.br/wp-content/uploads/2022/04/laranja.jpg" alt="Suco de Laranja">
+                    <div class="details">
+                        <input type="checkbox" id="drink2" data-name="Suco" price="3.00">
+                        <label for="drink2">Suco de Laranja - R$ 3,00</label>
+                        <div class="quantity-controls" id="qty_controls_drink2">
+                            <button onclick="changeQtd('drink2', -1)">-</button>
+                            <span id="qty_drink2">1</span>
+                            <button onclick="changeQtd('drink2', 1)">+</button>
+                        </div>
+                        <p>Suco natural de laranja.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart" id="cart">
+            <h2>Carrinho de Compras</h2>
+            <ul id="cartItems"></ul>
+            <p class="total">Total: R$ <span id="totalPrice">0.00</span></p>
+            <button onclick="finalizeOrder()">Finalizar Pedido</button>
+        </div>
+
+        <div class="checkout" id="checkout" style="display:none;">
+            <h2>Finalizar Pedido</h2>
+            <form id="orderForm">
+                <div>
+                    <label for="name">Nome Completo:</label>
+                    <input type="text" id="name" required>
+                </div>
+                <br>
+                <div>
+                    <label for="address">Endereço:</label>
+                    <input type="text" id="address" required>
+                </div>
+                <br>
+                <div>
+                    <label for="payment">Forma de Pagamento:</label>
+                    <select id="payment" required>
+                        <option value="debit" selected>Cartão de Débito</option>
+                        <option value="credit">Cartão de Crédito</option>
+                        <option value="pix">Pix</option>
+                    </select>
+                </div>
+                <br>
+                <div id="card-details" class="card-details">
+                    <div>
+                        <label for="cardNumber">Número do Cartão:</label>
+                        <input type="text" id="cardNumber" required>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="cardName">Nome no Cartão:</label>
+                        <input type="text" id="cardName" required>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="cardExpiry">Validade:</label>
+                        <input type="text" id="cardExpiry" required>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="cardCVC">CVC:</label>
+                        <input type="text" id="cardCVC" required>
+                    </div>
+                    <br>
+                </div>
+                <div id="pix-details" class="pix-details">
+                    <p>Escaneie o código QR abaixo para pagar com Pix:</p>
+                    <img src="https://product.corel.com/help/Common/CDGS/540223850/Shared/CorelDRAW-QR-code.png" alt="QR Code Pix" class="qr-code">
+                </div>
+                <div id="orderSummary"></div>
+                <button type="button" onclick="confirmOrder()">Confirmar Pedido</button>
+                <button type="button" onclick="cancel()">Cancelar Pedido</button>
+            </form>
+        </div>
+
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Confirmação de Pedido</h2>
+                <p>Você tem certeza que deseja confirmar o pedido?</p>
+                <button onclick="submitOrder()">Sim</button>
+                <button onclick="closeModal()">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cart = [];
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const itemName = checkbox.getAttribute('data-name');
+                const itemPrice = parseFloat(checkbox.getAttribute('price'));
+                const quantityControls = document.querySelector(`#qty_controls_${checkbox.id}`);
+                const quantitySpan = document.querySelector(`#qty_${checkbox.id}`);
+
+                if (checkbox.checked) {
+                    quantityControls.style.display = 'inline';
+                    cart.push({ name: itemName, price: itemPrice, quantity: 1 });
+                } else {
+                    quantityControls.style.display = 'none';
+                    const index = cart.findIndex(item => item.name === itemName);
+                    if (index !== -1) cart.splice(index, 1);
+                }
+
+                updateCart();
+            });
+        });
+
+        function changeQtd(id, delta) {
+            const checkbox = document.querySelector(`#${id}`);
+            const itemName = checkbox.getAttribute('data-name');
+            const quantitySpan = document.querySelector(`#qty_${id}`);
+            let quantity = parseInt(quantitySpan.textContent);
+
+            quantity = Math.max(0, quantity + delta);
+            quantitySpan.textContent = quantity;
+
+            if (quantity === 0) {
+                checkbox.checked = false;
+                document.querySelector(`#qty_controls_${id}`).style.display = 'none';
+                const index = cart.findIndex(item => item.name === itemName);
+                if (index !== -1) cart.splice(index, 1);
+            } else {
+                const cartItem = cart.find(item => item.name === itemName);
+                if (cartItem) {
+                    cartItem.quantity = quantity;
+                }
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            let totalPrice = 0;
+
+            cart.forEach(item => {
+                totalPrice += item.price * item.quantity;
+                const li = document.createElement('li');
+                li.textContent = `${item.name} - R$ ${item.price.toFixed(2)} x ${item.quantity}`;
+                cartItems.appendChild(li);
+            });
+
+            document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+
+        
+            const floatingButton = document.getElementById('floatingButton');
+            if (cart.length > 0) {
+                floatingButton.style.display = 'block';
+            } else {
+                floatingButton.style.display = 'none';
+            }
+        }
+
+function scrollToCart() {
+    document.getElementById('cart').scrollIntoView({ behavior: 'smooth' });
+}
+
+        function finalizeOrder() {
+            if (cart.length === 0) {
+                alert('O carrinho está vazio!');
+                return;
+            }
+
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('cart').style.display = 'none';
+            document.getElementById('checkout').style.display = 'block';
+            const orderSummary = document.getElementById('orderSummary');
+            orderSummary.innerHTML = `
+                <h3>Resumo do Pedido</h3>
+                <ul>
+                    ${cart.map(item => `<li>${item.name} - R$ ${item.price.toFixed(2)} x ${item.quantity}</li>`).join('')}
+                </ul>
+                <p>Total: R$ ${document.getElementById('totalPrice').textContent}</p>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        function confirmationModalOpen(){
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
+        function confirmOrder() {
+            const paymentMethod = document.getElementById('payment').value;
+            const cardDetails = document.getElementById('card-details');
+
+            if (paymentMethod !== 'pix' && (!cardDetails.querySelector('#cardNumber').value ||
+                !cardDetails.querySelector('#cardName').value ||
+                !cardDetails.querySelector('#cardExpiry').value ||
+                !cardDetails.querySelector('#cardCVC').value)) {
+                alert('Por favor, preencha todos os dados do cartão!');
+                return;
+            }
+
+            confirmationModalOpen();
+        }
+
+        function submitOrder() {
+            document.getElementById('orderForm').submit(); 
+            alert('Pedido confirmado.');
+            cancel();
+        }
+
+        function cancel() {
+        cart.length = 0;
+        updateCart();
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+            document.querySelector(`#qty_controls_${checkbox.id}`).style.display = 'none';
+            document.querySelector(`#qty_${checkbox.id}`).textContent = '1';
+        });
+
+        document.getElementById('menu').style.display = 'block';
+        document.getElementById('cart').style.display = 'block';
+        document.getElementById('checkout').style.display = 'none';
+    }
+
+        document.getElementById('payment').addEventListener('change', event => {
+            const cardDetails = document.getElementById('card-details');
+            const pixDetails = document.getElementById('pix-details');
+
+            if (event.target.value === 'debit' || event.target.value === 'credit') {
+                cardDetails.style.display = 'block';
+                pixDetails.style.display = 'none';
+            } else {
+                cardDetails.style.display = 'none';
+                pixDetails.style.display = 'block';
+            }
+        });
+
+        document.getElementById('payment').dispatchEvent(new Event('change'));
+
+        document.getElementById('orderForm').addEventListener('submit', event => {
+            event.preventDefault();
+            alert('Pedido Confirmado!');
+            submitOrder();
+        });
+    </script>
+
+<div id="floatingButton" style="display: none;" onclick="scrollToCart()">
+    <center>🛒</center>
+</div>
+</body>
+</html>
